@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diet App</title>
+    <!-- CSS dosyalarınızı buraya ekleyin -->
+</head>
+<body>
+    <header>
+        <h1>Diet App</h1>
+        <nav>
+            <ul>
+                <li><a href="{% url 'nutritionplan-list' %}">Nutrition Plans</a></li>
+                <li><a href="{% url 'nutritionplan-create' %}">Create Plan</a></li>
+                <!-- Kullanıcı oturum açmışsa gösterilecek bağlantılar -->
+                {% if user.is_authenticated %}
+                {% else %}
+                    <li><a href="{% url 'login' %}">Login</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+    <footer>
+        <p>&copy; 2024 Diet App. All rights reserved.</p>
+    </footer>
+</body>
+</html>
