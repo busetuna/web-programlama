@@ -1,2 +1,1 @@
-# web-programlama
- Web Programlama Proje
+# webprogramlama
