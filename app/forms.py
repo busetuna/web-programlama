@@ -6,7 +6,14 @@ from django import forms
 class NutritionPlanForm(forms.ModelForm):
     class Meta:
         model = NutritionPlan
-        fields = ['client', 'title', 'description']
+        fields = ['title', 'description', 'client']
+        
+    def __init__(self, *args, **kwargs):
+        dietitian = kwargs.pop('dietitian', None)
+        super().__init__(*args, **kwargs)
+        if dietitian:
+            self.fields['client'].queryset = CustomUser.objects.filter(assigned_dietitian=dietitian)
+
 
     
 class CustomUserCreationForm(UserCreationForm):

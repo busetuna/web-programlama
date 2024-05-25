@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Kullanıcı Ana Sayfası</title>
+</head>
+<body>
+    <h1>Hoş geldiniz, {{ request.user.username }}!</h1>
+
+    {% if assigned_dietitian %}
+        <h2>Atanan Diyetisyen</h2>
+        <p>{{ assigned_dietitian.username }} - {{ assigned_dietitian.email }}</p>
+    {% else %}
+        <p>Henüz size atanmış bir diyetisyen yok.</p>
+    {% endif %}
+
+    <h2>Atanan Beslenme Planları</h2>
+    <ul>
+        {% for plan in assigned_plans %}
+            <li>{{ plan.title }} - {{ plan.description }}</li>
+        {% endfor %}
+    </ul>
+
+    <br><br>
+    <form action="{% url 'logout' %}" method="post">
+        {% csrf_token %}
+        <button type="submit">Log Out</button>
+    </form>
+</body>
+</html>
