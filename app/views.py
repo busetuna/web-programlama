@@ -11,6 +11,8 @@ from django.contrib.auth import login as auth_login
 from django.contrib.auth import logout
 from .models import *
 import random
+import requests
+
 class DietitianRequiredMixin(UserPassesTestMixin):
     
     def test_func(self):
@@ -20,8 +22,11 @@ class ClientRequiredMixin(UserPassesTestMixin):
     def test_func(self):
         return self.request.user.user_type == 2
 
-@login_required
 def index(request):
+    return render(request, 'index.html')
+
+@login_required
+def home(request):
     if request.user.user_type == 1:  # Eğer kullanıcı bir diyetisyen ise
         assigned_users = CustomUser.objects.filter(assigned_dietitian=request.user.id)
         nutrition_plans = NutritionPlan.objects.filter(dietitian=request.user)
@@ -31,11 +36,14 @@ def index(request):
             'nutrition_plans': nutrition_plans,
         }
         return render(request, 'home_dietitian.html', context)
+
     elif request.user.user_type == 2:
         assigned_plans = NutritionPlan.objects.filter(client=request.user)
+        assigned_dietitian = CustomUser.objects.filter(id=request.user.assigned_dietitian_id)
 
         context = {
             'assigned_plans': assigned_plans,
+            'assigned_dietitian': assigned_dietitian
         }
         return render(request, 'home_user.html', context)
     else:
@@ -65,7 +73,7 @@ def login_view(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            return redirect('index')  # Giriş başarılı olursa ana sayfaya yönlendir
+            return redirect('home')  # Giriş başarılı olursa ana sayfaya yönlendir
         else:
             return HttpResponse("Geçersiz giriş")  # Giriş başarısız olursa hata mesajı 
     else:
@@ -73,7 +81,7 @@ def login_view(request):
     
 def logout_view(request):
     logout(request)
-    return redirect('login')
+    return redirect('login_view')
 
 def register(request):
     if request.method == 'POST':
@@ -96,6 +104,28 @@ def register(request):
         form = CustomUserCreationForm()
     return render(request, 'signup.html', {'form': form})
 
+def weight_entry(request):
+    return HttpResponse("bilgileri kaydet")
+
+def plan_view(request):
+    assigned_plans = NutritionPlan.objects.filter(client=request.user)
+
+    context = {
+        'assigned_plans': assigned_plans
+    }
+    return render(request, "plan_view.html", context)
+
+def client_view(request):
+    # Sadece diyetisyenlerin atadığı danışanları çekmek için bir sorgu yapın
+    assigned_clients = CustomUser.objects.filter(assigned_dietitian=request.user)
+
+    # context içerisine uygun verileri ekleyin
+    context = {
+        'assigned_clients': assigned_clients,
+    }
+
+    # client_view.html şablonuna bu context ile render edin
+    return render(request, "client_view.html", context)
 
 def search_recipe(request):
     api_id = "63b31812"
