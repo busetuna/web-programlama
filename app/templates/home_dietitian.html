@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dietitian Home</title>
+</head>
+<body>
+    <h1>Welcome, {{ request.user.username }}!</h1>
+
+    <h2>Assigned Users</h2>
+    <ul>
+        {% for user in assigned_users %}
+            <li>{{ user.username }} - {{ user.email }}</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Nutrition Plans</h2>
+    <ul>
+        {% for plan in nutrition_plans %}
+            <li>{{ plan.title }} - for {{ plan.client.username }}</li>
+        {% endfor %}
+    </ul>
+
+    <a href="{% url 'assign_nutrition_plan' %}">Beslenme Planı Ata</a>
+
+    <br><br>
+    <form action="{% url 'logout' %}" method="post">
+        {% csrf_token %}
+        <button type="submit">Log Out</button>
+    </form>
+</body>
+</html>
