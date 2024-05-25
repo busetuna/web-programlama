@@ -1,29 +1,111 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <title>Kullanıcı Ana Sayfası</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Dashboard</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .sidebar {
+            background-color: #343a40;
+            color: #fff;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            padding-top: 20px;
+            width: 250px;
+        }
+
+        .sidebar-heading {
+            padding: 10px 20px;
+        }
+
+        .nav-link {
+            color: #fff;
+        }
+
+        .nav-link:hover {
+            color: #adb5bd;
+        }
+
+        .content {
+            margin-left: 250px;
+            padding: 20px;
+        }
+    </style>
 </head>
+
 <body>
-    <h1>Hoş geldiniz, {{ request.user.username }}!</h1>
+    <div class="sidebar">
+        <a href="home" style="text-decoration: none; color: #fff;"><h3 class="sidebar-heading">{{ request.user.username }}</h3></a>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link" href="#">Gelişim Kaydet</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'plan_view' %}">Planlar</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'search_recipe' %}">Tarifler</a>
+            </li>
+            <li class="nav-item">
+                <a href="logout_view" class="text-danger">Çıkış Yap</a>
+            </li>
+        </ul>
+    </div>
 
-    {% if assigned_dietitian %}
-        <h2>Atanan Diyetisyen</h2>
-        <p>{{ assigned_dietitian.username }} - {{ assigned_dietitian.email }}</p>
-    {% else %}
-        <p>Henüz size atanmış bir diyetisyen yok.</p>
-    {% endif %}
+    <div class="content">
+        <div class="container">
+            <div id="assigned-dietitian">
+                <h2>Atanmış Diyetisyen</h2>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Kullanıcı Adı</th>
+                            <th>E-mail</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if assigned_dietitian %}
+                        {% for dietitian in assigned_dietitian %}
+                        <tr>
+                            <td>{{ dietitian.username }}</td>
+                            <td>{{ dietitian.email }}</td>
+                        </tr>
+                        {% endfor %}
+                        {% else %}
+                        <p>Henüz size atanmış bir diyetisyen yok.</p>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
 
-    <h2>Atanan Beslenme Planları</h2>
-    <ul>
-        {% for plan in assigned_plans %}
-            <li>{{ plan.title }} - {{ plan.description }}</li>
-        {% endfor %}
-    </ul>
-
-    <br><br>
-    <form action="{% url 'logout' %}" method="post">
-        {% csrf_token %}
-        <button type="submit">Log Out</button>
-    </form>
+            <div id="nutrition-plans" class="mt-5">
+                <h2>Beslenme Planları</h2>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Plan Adı</th>
+                            <th>Açıklama</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for plan in assigned_plans %}
+                        <tr>
+                            <td>{{ plan.title }}</td>
+                            <td>{{ plan.description }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

@@ -1,31 +1,107 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <title>Dietitian Home</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dietitian Dashboard</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .sidebar {
+            background-color: #343a40;
+            color: #fff;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            padding-top: 20px;
+            width: 250px;
+        }
+
+        .sidebar-heading {
+            padding: 10px 20px;
+        }
+
+        .nav-link {
+            color: #fff;
+        }
+
+        .nav-link:hover {
+            color: #adb5bd;
+        }
+
+        .content {
+            margin-left: 250px;
+            padding: 20px;
+        }
+    </style>
 </head>
+
 <body>
-    <h1>Welcome, {{ request.user.username }}!</h1>
 
-    <h2>Assigned Users</h2>
-    <ul>
-        {% for user in assigned_users %}
-            <li>{{ user.username }} - {{ user.email }}</li>
-        {% endfor %}
-    </ul>
+    <div class="sidebar">
+        <a href="#" style="text-decoration: none; color: #fff;"><h3 class="sidebar-heading">{{ request.user.username }}</h3></a>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link" href="client_view">Danışanlar</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'assign_nutrition_plan' %}">Planlar</a>
+            </li>
+            <li class="nav-item">
+                <a href="logout_view" class="text-danger">Çıkış Yap</a>
+            </li>
+        </ul>
+    </div>
 
-    <h2>Nutrition Plans</h2>
-    <ul>
-        {% for plan in nutrition_plans %}
-            <li>{{ plan.title }} - for {{ plan.client.username }}</li>
-        {% endfor %}
-    </ul>
+    <div class="content">
+        <div class="container">
+            <h1 class="my-4">Dietitian Dashboard</h1>
+            <div id="assigned-users">
+                <h2>Assigned Users</h2>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Email</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in assigned_users %}
+                        <tr>
+                            <td>{{ user.username }}</td>
+                            <td>{{ user.email }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
 
-    <a href="{% url 'assign_nutrition_plan' %}">Beslenme Planı Ata</a>
+            <div id="nutrition-plans" class="mt-5">
+                <h2>Nutrition Plans</h2>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Plan Name</th>
+                            <th>Assigned User</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for plan in nutrition_plans %}
+                        <tr>
+                            <td>{{ plan.title }}</td>
+                            <td>{{ plan.client.username }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 
-    <br><br>
-    <form action="{% url 'logout' %}" method="post">
-        {% csrf_token %}
-        <button type="submit">Log Out</button>
-    </form>
 </body>
 </html>

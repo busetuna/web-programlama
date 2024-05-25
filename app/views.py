@@ -95,3 +95,25 @@ def register(request):
     else:
         form = CustomUserCreationForm()
     return render(request, 'signup.html', {'form': form})
+
+
+def search_recipe(request):
+    api_id = "63b31812"
+    api_key = "61d97eef2e3e04acbbe8eadefd2b06d9"
+    query = request.GET.get('query', '')
+    url = f"https://api.edamam.com/search?q={query}&app_id={api_id}&app_key={api_key}"
+    response = requests.get(url)
+
+    if response.status_code == 200:
+        data = response.json()
+        recipes = []
+        for hit in data['hits']:
+            recipe = {
+                'name': hit['recipe']['label'],
+                'ingredients': hit['recipe']['ingredientLines']
+            }
+            recipes.append(recipe)
+        return render(request, "search_recipe.html", {"recipes": recipes})
+    else:
+        print("Hata:", response.status_code)
+        return None
