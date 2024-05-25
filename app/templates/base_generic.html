@@ -16,7 +16,7 @@
                 <!-- Kullanıcı oturum açmışsa gösterilecek bağlantılar -->
                 {% if user.is_authenticated %}
                 {% else %}
-                    <li><a href="{% url 'login' %}">Login</a></li>
+                    <li><a href="{% url 'login_view' %}">Login</a></li>
                 {% endif %}
             </ul>
         </nav>
