@@ -12,6 +12,12 @@ from django.contrib.auth import logout
 from .models import *
 import random
 import requests
+from django.contrib.auth.views import LoginView
+from django.shortcuts import redirect
+from django.shortcuts import render, redirect
+from django.http import HttpResponse
+from django.contrib.auth.views import LoginView
+from .forms import LoginForm
 
 class DietitianRequiredMixin(UserPassesTestMixin):
     
@@ -21,6 +27,18 @@ class DietitianRequiredMixin(UserPassesTestMixin):
 class ClientRequiredMixin(UserPassesTestMixin):
     def test_func(self):
         return self.request.user.user_type == 2
+
+class CustomLoginView(LoginView):
+    def form_valid(self, form):
+        remember_me = self.request.POST.get('remember_me') == 'on'
+        if not remember_me:
+            self.request.session.set_expiry(0)
+            self.request.session.modified = True
+        return super(CustomLoginView, self).form_valid(form)        
+
+class CustomLoginView(LoginView):
+    form_class = LoginForm
+    template_name = 'login.html'
 
 def index(request):
     return render(request, 'index.html')
@@ -73,6 +91,8 @@ def login_view(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
+            request.session['user_id'] = user.id
+            request.session['username'] = user.username
             return redirect('home')  # Giriş başarılı olursa ana sayfaya yönlendir
         else:
             return HttpResponse("Geçersiz giriş")  # Giriş başarısız olursa hata mesajı 
@@ -147,3 +167,35 @@ def search_recipe(request):
     else:
         print("Hata:", response.status_code)
         return None
+    
+def set_session(request):
+    request.session['username'] = 'John Doe'
+    return HttpResponse("Oturum verisi ayarlandı")
+
+def get_session(request):
+    username = request.session.get('username')
+    if username:
+        return HttpResponse(f"Merhaba {username}")
+    else:
+        return HttpResponse("Oturumda kullanıcı adı bulunamadı.")
+
+def delete_session(request):
+    try:
+        del request.session['username']
+    except KeyError:
+        pass
+    return HttpResponse("Oturum verisi silindi")
+
+def set_cookie(request):
+    response = HttpResponse("Çerez ayarlandı")
+    response.set_cookie('username', 'John Doe', max_age=3600, httponly=True, secure=True)
+    return response
+
+def get_cookie(request):
+    username = request.COOKIES.get('username', 'Misafir')
+    return HttpResponse(f"Merhaba {username}")
+
+def delete_cookie(request):
+    response = HttpResponse("Çerez silindi")
+    response.delete_cookie('username')
+    return response
