@@ -18,3 +18,6 @@ zekeriya
 220201069 - Buse Tuna
 210201080 - Buse Salı
 200201007 - Mehmet Hüseyin Alptekin
+
+
+localhost:8000 de çalışmakta
